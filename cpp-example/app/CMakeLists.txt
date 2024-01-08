@@ -1,0 +1,7 @@
+add_executable(cpp-example app.cpp)
+set(GENERAL_COMPILE_FLAGS "-Wall;-Wextra")
+set(DEBUG_COMPILE_FLAGS "${GENERAL_COMPILE_FLAGS};-g;-O0")
+set(RELEASE_COMPILE_FLAGS "${GENERAL_COMPILE_FLAGS};-O3")
+target_compile_options(cpp-example PRIVATE "$<$<CONFIG:DEBUG>:${DEBUG_COMPILE_FLAGS}>")
+target_compile_options(cpp-example PRIVATE "$<$<CONFIG:RELEASE>:${RELEASE_COMPILE_FLAGS}>")
+target_link_libraries(cpp-example PRIVATE example_lib)
