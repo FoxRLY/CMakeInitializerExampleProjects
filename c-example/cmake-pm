@@ -39,7 +39,11 @@ fi;
 
 if [[ "${1,,}" == "newlib" ]]
 then
-    mkdir ./include/${2}
+    if [ -d ./include/${2} ] || [ -d ./src/${2} ]
+    then
+        echo 'Include or src directories already have similarly named library, aborting'
+        exit
+    fi;    mkdir ./include/${2}
     echo '#pragma once' >> ./include/${2}/${2}.h
     echo '' >> ./include/${2}/${2}.h
     echo 'int sum(int a, int b);' >> ./include/${2}/${2}.h
@@ -52,7 +56,8 @@ then
     echo 'file(GLOB_RECURSE SOURCE_FILES "${CMAKE_SOURCE_DIR}/src/${LIB_NAME}/*.c")' >> ./src/${2}/CMakeLists.txt
     echo 'add_library(${LIB_NAME} ${SOURCE_FILES} ${HEADER_FILES})' >> ./src/${2}/CMakeLists.txt
     echo 'target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include")' >> ./src/${2}/CMakeLists.txt
-    echo 'Do not forget to add new library to target_link_library in app/CMakeLists.txt'
+    echo 'list(APPEND LIBRARY_LIST ${LIB_NAME})' >> ./src/${2}/CMakeLists.txt
+    echo 'set(LIBRARY_LIST ${LIBRARY_LIST} PARENT_SCOPE)' >> ./src/${2}/CMakeLists.txt
     exit
 fi;
 
@@ -64,7 +69,7 @@ fi;
 
 if [[ "${1,,}" == "test" ]]
 then
-    cmake -B ./build/debug -DCMAKE_BUILD_TYPE=DEBUG -G Ninja && cmake --build ./build/debug --target test_exec && ctest --test-dir ./build/debug "${@:2}"
+    cmake -B ./build/debug -DCMAKE_BUILD_TYPE=DEBUG -G Ninja && cmake --build ./build/debug --target test_exec && GTEST_COLOR=1 ctest --test-dir ./build/debug "${@:2}"
     exit
 fi;
 

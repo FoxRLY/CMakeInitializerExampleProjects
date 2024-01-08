@@ -20,6 +20,8 @@ else()
     message(STATUS "Doxygen not found - no docs will be generated")
 endif()
 
+set(LIBRARY_LIST "")
+
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(test)
